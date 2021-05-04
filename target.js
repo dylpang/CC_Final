@@ -1,12 +1,17 @@
 class Target{
-	constructor(x,y){
-		this.x = x;
-		this.y = y;
+	constructor(){
+		this.x = random(0, width);
+		this.y = random(0, height);
 	}
 
 
 	display(){
 		targetshape(this.x, this.y);
+	}
+
+	checkclick(x, y){
+		let d = dist(x, y, this.x, this.y);
+		return d;
 	}
 
 
