@@ -1,7 +1,7 @@
 class Target{
 	constructor(){
-		this.x = random(0, width);
-		this.y = random(0, height);
+		this.x = random(20, width-20);
+		this.y = random(20, height-20);
 	}
 
 
