@@ -1,16 +1,14 @@
-class Bomb{
+class Movingtarget{
+
 	constructor(){
 		this.x = random(20, width-20);
 		this.y = random(20, height-20);
 		this.position = new createVector(this.x, this.y);
-		this.velocity = new createVector((random(-1, 1)), int(random(-6, 6)));
+		this.velocity = new createVector(int(random(-6, 6)), int(random(-6, 6)));
 	}
 
-
 	display(){
-		hitbox(this.position.x+7, this.position.y+15); // the 7 and 15 are used to center the hitbox properly with the bombsprite
-		animation(bombsprite, this.position.x, this.position.y);
-
+		goldtarget(this.position.x, this.position.y);
 	}
 
 	checkclick(x, y){
@@ -22,7 +20,7 @@ class Bomb{
 		this.position.add(this.velocity);
 	}
 
-	checkedges(){ //repositions bomb within the frame
+	checkedges(){ //repositions the target within the frame
 		if(this.position.x > width){
 			this.position.x = 0;
 		}else if(this.position.x < 0){
@@ -34,18 +32,18 @@ class Bomb{
 			this.position.y = height;
 		}
 	}
-
-	stop(){
-		this.velocity.x = 0;
-		this.velocity.y = 0;
-	}
-
-
-
 }
 
-function hitbox(x, y){
+
+
+function goldtarget(x, y){
 	noStroke();
-	fill(0,0); // invisible circle
+	fill(166, 124, 0);
 	circle(x, y, 75);
+	fill(255,191,0);
+	circle(x, y, 50);
+	fill(255,220,115);
+	circle(x, y, 25);
+	
+
 }
