@@ -22,7 +22,7 @@ class Bomb{
 		this.position.add(this.velocity);
 	}
 
-	checkedges(){ //repositions bomb within the frame
+	checkedges(){ //repositions bomb randomly within the frame
 		if(this.position.x > width){
 			this.position.x = 0;
 		}else if(this.position.x < 0){
@@ -38,6 +38,11 @@ class Bomb{
 	stop(){
 		this.velocity.x = 0;
 		this.velocity.y = 0;
+	}
+
+	play(){
+		this.velocity.x = random(-9, 9);
+		this.velocity.y = random(-9, 9);
 	}
 
 

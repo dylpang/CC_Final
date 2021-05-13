@@ -7,18 +7,22 @@ let hearts = [];
 let gametarget = [];
 let gametarget2 = [];
 let movingtarget = [];
+let x = 0;
 let bomb; // array of bombs
 let gametime, totaltime, temptime; //timer help from Jason Erdreich - https://youtu.be/QZDG2FmCjTo
 let timelimit = 10;
 let spawnrate = 1;
 let score = 0; //score for warmup
 let gamescore = 0; // score for game start
+let tempscore = 0;
+let highscore = 0; // highscore
 let lives = 3;
 let music, continuesound, tagethit, targetmiss, bombsound; // audio variables
 function preload() {
 	// images
 	mainmenu = loadImage('assets/mainmenu.png');
 	backdrop = loadImage('assets/backdrop.png');
+	gamebackground = loadImage('assets/gamebackground.jpg');
 	hearts = loadAnimation('assets/hearts-01.png', 'assets/hearts-03.png');
 	font = loadFont('assets/VCR_OSD_MONO_1.001.ttf');
 	bombsprite = loadAnimation('assets/Bomb-01.png', 'assets/Bomb-07.png');
@@ -80,15 +84,26 @@ function loadingscreen(){
 		scale(.6);
 		image(mainmenu, -70, 0);
 		pop();
-		targetshape(width/2, height/2);
-		goldtarget(width/2 - 100, height/2);
-		goldtarget(width/2 + 100, height/2);
+		x += 5;
+		if(x == width + 550){
+			x = 0;
+		}
+		textAlign(CENTER);
+		targetshape(-300 + x, height/2);
+		targetshape(-500 + x, height/2);
+		targetshape(-100 + x, height/2);
+		goldtarget(-400 + x, height/2);
+		goldtarget(-200 + x, height/2);	
+		fill(255);	
+		textSize(90);
+		text("Aim Train", -300 + x, 350);
 		fill(255);	
 		textAlign(CENTER);
+		textSize(50);
 		text("Dylan Pangilinan / Creative Coding Final", width/2, 100);
-		textSize(100);
-		text("Aim Train", width/2, 300);
+
 		if(frameCount % 60 < 30){
+		textSize(80);
 		text("Press enter start", width/2, height/2+ 250);
 
 	}
@@ -128,7 +143,11 @@ function warmup(){
 		textAlign(CENTER);
 		textSize(30);
 		text("Reach 1000 to continue", width/2, 100);
-		text("Avoid hitting the bombs", width/2, 140);
+		text("Avoid hitting the bomb", width/2, 140);
+		if(lives == 0){
+			textSize(50);
+			text("You only have 3 lives!!", width/2, 200);
+		}
 		if(score == 1000){
 			fill(0, 255, 0,100);
 			rect(0, 0, width, height);
@@ -142,7 +161,19 @@ function warmup(){
 }
 
 function gamestart(){
-		gametime -= temptime;
+		push();
+		scale(0.7);
+		image(gamebackground, -80, -20);
+		pop();
+
+		if(score == 0){ //workaround so timer doesn't reset after mouseclick again
+			temptime = totaltime;
+			lives = 3;
+			score += 100;
+
+		}
+		tempttime = temptime; 
+		gametime  = totaltime - temptime;
 		fill(255);
 		textSize(30);
 		text("Score: " + gamescore, 20, 60);
@@ -150,6 +181,9 @@ function gamestart(){
 		text("Lives: " , 20, 140);
 
 		animation(hearts, 180, 130);
+		if(lives == 3){
+			hearts.changeFrame(0);
+		}
 		hearts.stop();
 
 		for(i = 0; i < gametarget.length; i++){
@@ -161,15 +195,41 @@ function gamestart(){
 			movingtarget[i].checkedges();
 			movingtarget[i].display();
 		}
+		bombsprite.changeFrame(0);
+		bomb.play();
+		bomb.update();
+		bomb.checkedges();
+		bomb.display();
+
+		if(mouseIsPressed){
+		if(bomb.checkclick(mouseX, mouseY) < 75/2){
+			bombsprite.play();
+		}
+		}else{
+			bombsprite.stop();
+		}
 
 }
 
 function gameover(){
 	textSize(100);
 	textAlign(CENTER);
-	text("GAMEOVER", width/2, height/2);
+	frameRate(60);
+	if(frameCount % 60 < 30){
+		text("GAMEOVER", width/2, height/2);
+	}
+	tempscore = gamescore;
+	if(tempscore > highscore){ // get highscore
+		highscore = tempscore;
+	}
 	fill(255);
-	text("Score: " + gamescore, width/2, height/2 + 200)
+	text("SCORE: " + gamescore, width/2, height/2 + 100);
+	text("HIGH SCORE: " + highscore, width/2, height/2 + 200)
+	textSize(50);
+	text("Press space to restart", width/2, height/2 + 350);
+	text("Press enter to go to mainmenu", width/2, height/2 + 275);
+
+
 }
 
 function keyPressed(){
@@ -186,6 +246,23 @@ function keyPressed(){
 		continuesound.play();
 
 	}
+
+	if(keyCode == ENTER && start == 3){
+		music.stop();
+		start = 0;
+		score = 0;
+		gamescore = 0;
+		continuesound.play();
+
+	}
+
+	if(keyCode == 32 && start == 3){
+		start = 2;
+		gamescore = 0;
+		lives = 3;
+		score = 0;
+	}
+
 
 }
 
@@ -204,7 +281,9 @@ function mouseClicked(){
 		}else if(target[i].checkclick(mouseX, mouseY) > 75/2 && bomb.checkclick(mouseX, mouseY) > 75/2){
 			fill(255,0, 0, 200);
 			rect(0, 0, width, height);
-			lives--;
+			if(lives > 0){
+				lives--;
+			}
 			targetmiss.play();
 		}else if(bomb.checkclick(mouseX, mouseY) < 75/2){
 			bomb.stop();
@@ -214,12 +293,7 @@ function mouseClicked(){
 		}
 	}
 	if(start ==2){
-		if(score == 0){ //workaround so timer doesn't reset after mouseclick again
-		temptime = totaltime;
-		lives = 3;
-		score += 100;
 
-	}
 		for(i = 0; i < gametarget.length; i++){
 			if(gametarget[i].checkclick(mouseX, mouseY) < 75/2){
 				gamescore += 100;
@@ -237,6 +311,11 @@ function mouseClicked(){
 				gamescore += 200;
 				targethit.play();
 				movingtarget[i] = new Movingtarget();
+
+			}else if(bomb.checkclick(mouseX, mouseY) < 75/2){
+				bombsound.play();
+				start++;
+
 
 			}else{
 				fill(255,0, 0, 230);
@@ -257,5 +336,6 @@ function mouseClicked(){
 
 	}
 }
+
 
 
