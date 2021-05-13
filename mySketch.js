@@ -3,11 +3,12 @@
 
 let start = 0; // variable to check if game started
 let target = []; // array of targets
-let hearts = [];
+let hearts = []; // array of hearts
+// different targets
 let gametarget = [];
 let gametarget2 = [];
 let movingtarget = [];
-let x = 0;
+let x = 0; // for main menu animation
 let bomb; // array of bombs
 let gametime, totaltime, temptime; //timer help from Jason Erdreich - https://youtu.be/QZDG2FmCjTo
 let timelimit = 10;
@@ -41,7 +42,7 @@ function setup(){
 	createCanvas(1200, 800);
 	textFont(font);
 	textSize(50);
-	for (let i = 0; i < 1; i++){
+	for (let i = 0; i < 1; i++){ // creating a new target to spawn
 		target[i] = new Target();
 		gametarget[i] = new Target();
 		gametarget2[i] = new Target();
@@ -70,7 +71,7 @@ function draw(){
 	if(start == 2){
 		gamestart();
 	}
-
+	// if game ends
 	if(start == 3){
 		gameover();
 	}
@@ -119,7 +120,7 @@ function warmup(){
 		bomb.checkedges();
 		bomb.display();
 
-		if(mouseIsPressed){
+		if(mouseIsPressed){ // something I couldn't get was to play the bomb animation seemlessly from a single click without holding it :/
 		if(bomb.checkclick(mouseX, mouseY) < 75/2){
 			bombsprite.play();
 		}
@@ -277,7 +278,9 @@ function mouseClicked(){
 				target.slice();
 				targethit.play();
 				target[i] = new Target();
+				if(score != 1000){
 				score += 100;
+			}
 		}else if(target[i].checkclick(mouseX, mouseY) > 75/2 && bomb.checkclick(mouseX, mouseY) > 75/2){
 			fill(255,0, 0, 200);
 			rect(0, 0, width, height);
